@@ -13,10 +13,17 @@ float lettersExpectedTotal = 0; //a running total of the number of letters expec
 float errorsTotal = 0; //a running total of the number of errors (when hitting next)
 String currentPhrase = ""; //the current target phrase
 String currentTyped = ""; //what the user has typed so far
-final int DPIofYourDeviceScreen = 200; //you will need to look up the DPI or PPI of your device to make sure you get the right scale!!
+final int DPIofYourDeviceScreen = 227; //you will need to look up the DPI or PPI of your device to make sure you get the right scale!!
 //http://en.wikipedia.org/wiki/List_of_displays_by_pixel_density
 final float sizeOfInputArea = DPIofYourDeviceScreen*1; //aka, 1.0 inches square!
 PImage watch;
+
+// Determine the size of each key based on the screen width and the number of keys per row
+int keysPerRow = 3;
+float keyWidth;
+float keyHeight; // Set the key height as you prefer
+String[] keys = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"};
+String[] fixedKeys = {"_", "<-", "^"};
 
 //Variables for my silly implementation. You can delete this:
 char currentLetter = 'a';
@@ -28,11 +35,13 @@ void setup()
   phrases = loadStrings("phrases2.txt"); //load the phrase set into memory
   Collections.shuffle(Arrays.asList(phrases), new Random()); //randomize the order of the phrases with no seed
   //Collections.shuffle(Arrays.asList(phrases), new Random(100)); //randomize the order of the phrases with seed 100; same order every time, useful for testing
- 
+
   orientation(LANDSCAPE); //can also be PORTRAIT - sets orientation on android device
   size(800, 800); //Sets the size of the app. You should modify this to your device's native size. Many phones today are 1080 wide by 1920 tall.
   textFont(createFont("Arial", 24)); //set the font to arial 24. Creating fonts is expensive, so make difference sizes once in setup, not draw
   noStroke(); //my code doesn't use any strokes
+  keyWidth = sizeOfInputArea/keysPerRow;
+  keyHeight = (sizeOfInputArea/(int(keys.length / keysPerRow) + 1));
 }
 
 //You can modify anything in here. This is just a basic implementation.
@@ -65,13 +74,13 @@ void draw()
 
   if (startTime!=0)
   {
-    //feel free to change the size and position of the target/entered phrases and next button 
+    //feel free to change the size and position of the target/entered phrases and next button
     textAlign(LEFT); //align the text left
     fill(128);
     text("Phrase " + (currTrialNum+1) + " of " + totalTrialNum, 70, 50); //draw the trial count
     fill(128);
     text("Target:   " + currentPhrase, 70, 100); //draw the target string
-    text("Entered:  " + currentTyped +"|", 70, 140); //draw what the user has entered thus far 
+    text("Entered:  " + currentTyped +"|", 70, 140); //draw what the user has entered thus far
 
     //draw very basic next button
     fill(255, 0, 0);
@@ -80,13 +89,29 @@ void draw()
     text("NEXT > ", 650, 650); //draw next label
 
     //my draw code
-    fill(255, 0, 0); //red button
-    rect(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2); //draw left red button
-    fill(0, 255, 0); //green button
-    rect(width/2-sizeOfInputArea/2+sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2); //draw right green button
-    textAlign(CENTER);
-    fill(200);
-    text("" + currentLetter, width/2, height/2-sizeOfInputArea/4); //draw current letter
+    //fill(255, 0, 0); //red button
+    //rect(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2); //draw left red button
+    //fill(0, 255, 0); //green button
+    //rect(width/2-sizeOfInputArea/2+sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2); //draw right green button
+    //textAlign(CENTER);
+    //fill(200);
+    //text("" + currentLetter, width/2, height/2-sizeOfInputArea/4); //draw current letter
+
+    // Draw the keyboard
+    for (int i = 0; i < (keys.length + fixedKeys.length); i++) {
+      float x = ((width/2) - (sizeOfInputArea/2)) + (int(i%keysPerRow) * keyWidth);
+      float y = ((height/2) - (sizeOfInputArea/2)) + (int(i/keysPerRow) * keyHeight); // Position at the bottom of the screen
+      fill(255); // Key color
+      rect(x, y, keyWidth, keyHeight);
+      fill(0); // Text color
+      textAlign(CENTER);
+      if(i < keys.length) {
+        text(keys[i], x + keyWidth/2, y + keyHeight/2 + 5);
+      }
+      else{
+        text(fixedKeys[i-keys.length], x + keyWidth/2, y + keyHeight/2 + 5);
+      }
+    }
   }
 }
 
@@ -99,29 +124,51 @@ boolean didMouseClick(float x, float y, float w, float h) //simple function to d
 //my terrible implementation you can entirely replace
 void mousePressed()
 {
-  if (didMouseClick(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2)) //check if click in left button
-  {
-    currentLetter --;
-    if (currentLetter<'_') //wrap around to z
-      currentLetter = 'z';
-  }
+  if (mouseX >= ((width/2) - (sizeOfInputArea/2)) && mouseX <= ((width/2) + (sizeOfInputArea/2)) && mouseY >= ((height/2) - (sizeOfInputArea/2)) && mouseY <= ((height/2) + (sizeOfInputArea/2))) {
+    int col = int((mouseX - (width/2) + (sizeOfInputArea/2)) / keyWidth);
+    int row = int((mouseY - (height/2) + (sizeOfInputArea/2)) / keyHeight);
 
-  if (didMouseClick(width/2-sizeOfInputArea/2+sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2)) //check if click in right button
-  {
-    currentLetter ++;
-    if (currentLetter>'z') //wrap back to space (aka underscore)
-      currentLetter = '_';
-  }
+    int keyIndex = row*keysPerRow + col;
 
-  if (didMouseClick(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2, sizeOfInputArea, sizeOfInputArea/2)) //check if click occured in letter area
-  {
-    if (currentLetter=='_') //if underscore, consider that a space bar
-      currentTyped+=" ";
-    else if (currentLetter=='`' & currentTyped.length()>0) //if `, treat that as a delete command
-      currentTyped = currentTyped.substring(0, currentTyped.length()-1);
-    else if (currentLetter!='`') //if not any of the above cases, add the current letter to the typed string
+    if (keyIndex >= 0 && keyIndex < keys.length) {
+      char currentLetter = keys[keyIndex].toLowerCase().charAt(0);
       currentTyped+=currentLetter;
+    }
+    else if ((keyIndex - keys.length) >= 0 && (keyIndex - keys.length) < fixedKeys.length) {
+      keyIndex = keyIndex - keys.length;
+      char currentLetter = fixedKeys[keyIndex].charAt(0);
+      if (currentLetter=='_') //if underscore, consider that a space bar
+        currentTyped+=" ";
+      else if (currentLetter=='<' & currentTyped.length()>0) //if <-, treat that as a delete command
+        currentTyped = currentTyped.substring(0, currentTyped.length()-1);
+      else if (currentLetter=='^')
+        System.out.println("Toggle to next set of letters"); // TODO: Add toggle functionality
+    }
   }
+
+  //if (didMouseClick(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2)) //check if click in left button
+  //{
+  //  currentLetter --;
+  //  if (currentLetter<'_') //wrap around to z
+  //    currentLetter = 'z';
+  //}
+
+  //if (didMouseClick(width/2-sizeOfInputArea/2+sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2)) //check if click in right button
+  //{
+  //  currentLetter ++;
+  //  if (currentLetter>'z') //wrap back to space (aka underscore)
+  //    currentLetter = '_';
+  //}
+
+  //if (didMouseClick(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2, sizeOfInputArea, sizeOfInputArea/2)) //check if click occured in letter area
+  //{
+  //if (currentLetter=='_') //if underscore, consider that a space bar
+  //  currentTyped+=" ";
+  //else if (currentLetter=='`' & currentTyped.length()>0) //if `, treat that as a delete command
+  //  currentTyped = currentTyped.substring(0, currentTyped.length()-1);
+  //else if (currentLetter!='`') //if not any of the above cases, add the current letter to the typed string
+  //  currentTyped+=currentLetter;
+  //}
 
   //You are allowed to have a next button outside the 1" area
   if (didMouseClick(600, 600, 200, 200)) //check if click is in next button
@@ -167,7 +214,7 @@ void nextTrial()
     float wpm = (lettersEnteredTotal/5.0f)/((finishTime - startTime)/60000f); //FYI - 60K is number of milliseconds in minute
     float freebieErrors = lettersExpectedTotal*.05; //no penalty if errors are under 5% of chars
     float penalty = max(errorsTotal-freebieErrors, 0) * .5f;
-    
+
     System.out.println("Raw WPM: " + wpm); //output
     System.out.println("Freebie errors: " + freebieErrors); //output
     System.out.println("Penalty: " + penalty);
@@ -182,8 +229,7 @@ void nextTrial()
   {
     System.out.println("Trials beginning! Starting timer..."); //output we're done
     startTime = millis(); //start the timer!
-  } 
-  else
+  } else
     currTrialNum++; //increment trial number
 
   lastTime = millis(); //record the time of when this trial ended
@@ -204,9 +250,21 @@ void drawWatch()
   popMatrix();
 }
 
+//void drawKeyboard() {
+//  // Loop through the alphabet and draw each key
+//  for (int i = 0; i < 12; i++) {
+//    float keyX = (i % keysPerRow) * keyWidth + startingWidth;
+//    float keyY = ((i / keysPerRow) * keyHeight) + startingHeight; // Calculate Y based on the row
+//    // Draw key background
+//    fill(200); // Key color
+//    rect(keyX, keyY, keyWidth, keyHeight);
 
-
-
+//    // Draw letter
+//    fill(0); // Letter color
+//    textSize(keyWidth);
+//    text(char('A' + i), keyX + keyWidth/2, keyY + keyHeight);
+//  }
+//}
 
 //=========SHOULD NOT NEED TO TOUCH THIS METHOD AT ALL!==============
 int computeLevenshteinDistance(String phrase1, String phrase2) //this computers error between two strings
