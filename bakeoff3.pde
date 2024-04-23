@@ -2,6 +2,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
+char[] customOrder = {'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 'l', 'c', 'u', 'm', 'w', 'f', 'g', 'y', 'p', 'b', 'v', 'k', 'j', 'x', 'q', 'z'};
+
 String[] phrases; //contains all of the phrases
 int totalTrialNum = 2; //the total number of phrases to be tested - set this low for testing. Might be ~10 for the real bakeoff!
 int currTrialNum = 0; // the current trial number (indexes into trials array above)
@@ -35,6 +37,7 @@ void setup()
   noStroke(); //my code doesn't use any strokes
 }
 
+
 //You can modify anything in here. This is just a basic implementation.
 void draw()
 {
@@ -42,6 +45,14 @@ void draw()
   drawWatch(); //draw watch background
   fill(100);
   rect(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2, sizeOfInputArea, sizeOfInputArea); //input area should be 1" by 1"
+  
+  // Check if the current typed letter is wrong and change the background color to red if it is
+  if (1 <= currentTyped.length()  && currentTyped.length() <= currentPhrase.length()) {
+    if (currentTyped.charAt(currentTyped.length() - 1) != currentPhrase.charAt(currentTyped.length() - 1)) {
+      fill(255, 0, 0); // Red background color
+      rect(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2, sizeOfInputArea, sizeOfInputArea); // Change background to red
+    }
+  }
 
   if (finishTime!=0)
   {
@@ -78,15 +89,49 @@ void draw()
     rect(600, 600, 200, 200); //draw next button
     fill(255);
     text("NEXT > ", 650, 650); //draw next label
+    
+    // Draw the alphabet buttons
+    float buttonSize = sizeOfInputArea / 6; // 6 buttons per row
+    char[] customOrder = {'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 'l', 'c', 'u', 'm', 'w', 'f', 'g', 'y', 'p', 'b', 'v', 'k', 'j', 'x', 'q', 'z'};
+    
+    for (int i = 0; i < customOrder.length; i++) {
+        char letter = customOrder[i]; // Get the current letter from the custom order
+        float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; // Calculate x position
+        float y = height/2 - sizeOfInputArea/2 + floor(i / 6) * buttonSize; // Calculate y position
+        fill(255); // White button color
+        rect(x, y, buttonSize, buttonSize); // Draw the button
+        fill(0); // Black text color
+        textAlign(CENTER, CENTER);
+        text(letter, x + buttonSize/2, y + buttonSize/2); // Draw the letter in the center of the button
+    }
 
-    //my draw code
-    fill(255, 0, 0); //red button
-    rect(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2); //draw left red button
-    fill(0, 255, 0); //green button
-    rect(width/2-sizeOfInputArea/2+sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2); //draw right green button
-    textAlign(CENTER);
-    fill(200);
-    text("" + currentLetter, width/2, height/2-sizeOfInputArea/4); //draw current letter
+    int space = 28;
+    char letter = (char)('_'); // Get the current letter
+    float x = width/2 - sizeOfInputArea/2 + (space % 6) * buttonSize; // Calculate x position
+    float y = height/2 - sizeOfInputArea/2 + floor(space / 6) * buttonSize; // Calculate y position
+    fill(255); // White button color
+    rect(x, y, buttonSize, buttonSize); // Draw the button
+    fill(0); // Black text color
+    text(letter, x + buttonSize/2 - 1, y + buttonSize/2); // Draw the letter in the button
+    
+    int del = 29;
+    letter = (char)('<'); // Get the current letter
+    x = width/2 - sizeOfInputArea/2 + (del % 6) * buttonSize; // Calculate x position
+    y = height/2 - sizeOfInputArea/2 + floor(del / 6) * buttonSize; // Calculate y position
+    fill(255); // White button color
+    rect(x, y, buttonSize, buttonSize); // Draw the button
+    fill(0); // Black text color
+    text(letter, x + buttonSize/2 - 5, y + buttonSize/2 + 5); // Draw the letter in the button
+  
+
+    ////my draw code
+    //fill(255, 0, 0); //red button
+    //rect(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2); //draw left red button
+    //fill(0, 255, 0); //green button
+    //rect(width/2-sizeOfInputArea/2+sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2); //draw right green button
+    //textAlign(CENTER);
+    //fill(200);
+    //text("" + currentLetter, width/2, height/2-sizeOfInputArea/4); //draw current letter
   }
 }
 
@@ -96,32 +141,35 @@ boolean didMouseClick(float x, float y, float w, float h) //simple function to d
   return (mouseX > x && mouseX<x+w && mouseY>y && mouseY<y+h); //check to see if it is in button bounds
 }
 
+
 //my terrible implementation you can entirely replace
 void mousePressed()
 {
-  if (didMouseClick(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2)) //check if click in left button
-  {
-    currentLetter --;
-    if (currentLetter<'_') //wrap around to z
-      currentLetter = 'z';
+  // Check if the click is inside any of the letter buttons
+  float buttonSize = sizeOfInputArea / 6; // 6 buttons per row
+  for (int i = 0; i < customOrder.length; i++) {
+    float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; // Calculate x position
+    float y = height/2 - sizeOfInputArea/2 + floor(i / 6) * buttonSize; // Calculate y position
+    if (mouseX > x && mouseX < x + buttonSize && mouseY > y && mouseY < y + buttonSize) {
+      char letter = customOrder[i]; // Get the letter associated with the button
+      currentTyped += letter; // Add the letter to currentTyped
+    }
   }
-
-  if (didMouseClick(width/2-sizeOfInputArea/2+sizeOfInputArea/2, height/2-sizeOfInputArea/2+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2)) //check if click in right button
-  {
-    currentLetter ++;
-    if (currentLetter>'z') //wrap back to space (aka underscore)
-      currentLetter = '_';
+  
+  for (int i = 28; i < 30; i++) {
+    float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; // Calculate x position
+    float y = height/2 - sizeOfInputArea/2 + floor(i / 6) * buttonSize; // Calculate y position
+    if (mouseX > x && mouseX < x + buttonSize && mouseY > y && mouseY < y + buttonSize) {
+      if (i == 28) {
+        currentTyped += " "; // Add the letter to currentTyped
+      } else {
+        if (currentTyped.length() > 0) {
+          currentTyped = currentTyped.substring(0, currentTyped.length()-1); //delete last character
+        }
+      }
+    }
   }
-
-  if (didMouseClick(width/2-sizeOfInputArea/2, height/2-sizeOfInputArea/2, sizeOfInputArea, sizeOfInputArea/2)) //check if click occured in letter area
-  {
-    if (currentLetter=='_') //if underscore, consider that a space bar
-      currentTyped+=" ";
-    else if (currentLetter=='`' & currentTyped.length()>0) //if `, treat that as a delete command
-      currentTyped = currentTyped.substring(0, currentTyped.length()-1);
-    else if (currentLetter!='`') //if not any of the above cases, add the current letter to the typed string
-      currentTyped+=currentLetter;
-  }
+ 
 
   //You are allowed to have a next button outside the 1" area
   if (didMouseClick(600, 600, 200, 200)) //check if click is in next button
@@ -203,9 +251,6 @@ void drawWatch()
   image(watch, 0, 0);
   popMatrix();
 }
-
-
-
 
 
 //=========SHOULD NOT NEED TO TOUCH THIS METHOD AT ALL!==============
