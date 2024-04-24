@@ -33,8 +33,11 @@ char[][] letterMap = {
   {'o', 's', 'e', 'a', 't', 'p', 'i', 'c', 'm', 'r', 'l', 'b', 'w', 'n', 'd', 'f', 'h', 'g', 'u', 'v', 'j', 'y', 'k', 'z', 'q', 'x'},  // 'y'
   {'e', 'a', 'i', 'o', 'z', 'u', 'y', 'l', 's', 'd', 'c', 'h', 'r', 'm', 'b', 't', 'p', 'n', 'w', 'f', 'g', 'k', 'j', 'v', 'x', 'q'}   // 'z'
 };
+<<<<<<< HEAD
 
 boolean ERROR = false;
+=======
+>>>>>>> 30205fe3e81cb80724e229de578ae2deab1e8bb7
 
 String[] phrases; //contains all of the phrases
 int totalTrialNum = 2; //the total number of phrases to be tested - set this low for testing. Might be ~10 for the real bakeoff!
@@ -178,7 +181,11 @@ void mousePressed()
   for (int i = 0; i < 26; i++) {
     float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; // Calculate x position
     float y = height/2 - sizeOfInputArea/2 + (1+floor(i / 6)) * buttonSize; // Calculate y position
+<<<<<<< HEAD
     if (!ERROR && mouseX > x && mouseX < x + buttonSize && mouseY > y && mouseY < y + buttonSize) {
+=======
+    if (mouseX > x && mouseX < x + buttonSize && mouseY > y && mouseY < y + buttonSize) {
+>>>>>>> 30205fe3e81cb80724e229de578ae2deab1e8bb7
       char letter = (char)letter_order[i]; // Get the letter associated with the button
       currentTyped += letter; // Add the letter to currentTyped
     }
@@ -187,7 +194,11 @@ void mousePressed()
     float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; // Calculate x position
     float y = height/2 - sizeOfInputArea/2 + floor(i / 6) * buttonSize; // Calculate y position
     if (mouseX > x && mouseX < x + buttonSize && mouseY > y && mouseY < y + buttonSize) {
+<<<<<<< HEAD
       if (!ERROR && i == 0) {
+=======
+      if (i == 0) {
+>>>>>>> 30205fe3e81cb80724e229de578ae2deab1e8bb7
         currentTyped += " "; // Add the letter to currentTyped
       } else {
         if (currentTyped.length() > 0 && i != 0) {
