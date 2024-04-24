@@ -97,31 +97,31 @@ void draw()
     for (int i = 0; i < customOrder.length; i++) {
         char letter = customOrder[i]; // Get the current letter from the custom order
         float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; // Calculate x position
-        float y = height/2 - sizeOfInputArea/2 + floor(i / 6) * buttonSize; // Calculate y position
+        float y = height/2 - sizeOfInputArea/2 + (floor(i / 6) + 1) * buttonSize; // Calculate y position
         fill(255); // White button color
         rect(x, y, buttonSize, buttonSize); // Draw the button
         fill(0); // Black text color
         textAlign(CENTER, CENTER);
         text(letter, x + buttonSize/2, y + buttonSize/2); // Draw the letter in the center of the button
     }
-
-    int space = 28;
-    char letter = (char)('_'); // Get the current letter
-    float x = width/2 - sizeOfInputArea/2 + (space % 6) * buttonSize; // Calculate x position
-    float y = height/2 - sizeOfInputArea/2 + floor(space / 6) * buttonSize; // Calculate y position
-    fill(255); // White button color
-    rect(x, y, buttonSize, buttonSize); // Draw the button
-    fill(0); // Black text color
-    text(letter, x + buttonSize/2 - 1, y + buttonSize/2); // Draw the letter in the button
     
-    int del = 29;
-    letter = (char)('<'); // Get the current letter
-    x = width/2 - sizeOfInputArea/2 + (del % 6) * buttonSize; // Calculate x position
-    y = height/2 - sizeOfInputArea/2 + floor(del / 6) * buttonSize; // Calculate y position
+    float buttonSizeWidth = sizeOfInputArea / 2;
+    char letter = (char)('_'); // Get the current letter
+    float x = width/2 - sizeOfInputArea/2; // Calculate x position
+    float y = height/2 - sizeOfInputArea/2; // Calculate y position
     fill(255); // White button color
-    rect(x, y, buttonSize, buttonSize); // Draw the button
+    rect(x, y, buttonSizeWidth, buttonSize); // Draw the button
     fill(0); // Black text color
-    text(letter, x + buttonSize/2 - 5, y + buttonSize/2 + 5); // Draw the letter in the button
+    text(letter, x + buttonSizeWidth/2 - 1, y + buttonSize/2); // Draw the letter in the button
+    
+    int del = 1;
+    letter = (char)('<'); // Get the current letter
+    x = width/2 - sizeOfInputArea/2 + (del % 2) * buttonSizeWidth; // Calculate x position
+    y = height/2 - sizeOfInputArea/2 + floor(del / 2) * buttonSizeWidth; // Calculate y position
+    fill(255); // White button color
+    rect(x, y, buttonSizeWidth, buttonSize); // Draw the button
+    fill(0); // Black text color
+    text(letter, x + buttonSizeWidth/2 - 5, y + buttonSize/2 + 5); // Draw the letter in the button
   
 
     ////my draw code
@@ -149,27 +149,26 @@ void mousePressed()
   float buttonSize = sizeOfInputArea / 6; // 6 buttons per row
   for (int i = 0; i < customOrder.length; i++) {
     float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; // Calculate x position
-    float y = height/2 - sizeOfInputArea/2 + floor(i / 6) * buttonSize; // Calculate y position
+    float y = height/2 - sizeOfInputArea/2 + (floor(i / 6) + 1) * buttonSize; // Calculate y position
     if (mouseX > x && mouseX < x + buttonSize && mouseY > y && mouseY < y + buttonSize) {
       char letter = customOrder[i]; // Get the letter associated with the button
       currentTyped += letter; // Add the letter to currentTyped
     }
   }
   
-  for (int i = 28; i < 30; i++) {
-    float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; // Calculate x position
-    float y = height/2 - sizeOfInputArea/2 + floor(i / 6) * buttonSize; // Calculate y position
-    if (mouseX > x && mouseX < x + buttonSize && mouseY > y && mouseY < y + buttonSize) {
-      if (i == 28) {
-        currentTyped += " "; // Add the letter to currentTyped
-      } else {
-        if (currentTyped.length() > 0) {
-          currentTyped = currentTyped.substring(0, currentTyped.length()-1); //delete last character
-        }
-      }
+  
+  float x = width/2 - sizeOfInputArea/2; // Calculate x position
+  float y = height/2 - sizeOfInputArea/2; // Calculate y position
+  if (mouseX > x && mouseX < x + sizeOfInputArea/2 && mouseY > y && mouseY < y + buttonSize) {
+    currentTyped += " "; // Add the letter to currentTyped
+  }
+  
+  x = x + (sizeOfInputArea/2);
+  if (mouseX > x && mouseX < x + sizeOfInputArea/2 && mouseY > y && mouseY < y + buttonSize) {
+    if (currentTyped.length() > 0) {
+      currentTyped = currentTyped.substring(0, currentTyped.length()-1); //delete last character
     }
   }
- 
 
   //You are allowed to have a next button outside the 1" area
   if (didMouseClick(600, 600, 200, 200)) //check if click is in next button
