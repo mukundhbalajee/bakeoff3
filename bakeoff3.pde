@@ -2,7 +2,37 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
-char[] customOrder = {'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 'l', 'c', 'u', 'm', 'w', 'f', 'g', 'y', 'p', 'b', 'v', 'k', 'j', 'x', 'q', 'z'};
+char prev = ' ';
+char[] letter_order = {'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 'l', 'c', 'u', 'm', 'w', 'f', 'g', 'y', 'p', 'b', 'v', 'k', 'j', 'x', 'q', 'z'};
+char[][] letterMap = {
+  {'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 'l', 'c', 'u', 'm', 'w', 'f', 'g', 'y', 'p', 'b', 'v', 'k', 'j', 'x', 'q', 'z'},  // Space
+  {'n', 't', 'r', 'l', 's', 'c', 'd', 'm', 'i', 'g', 'y', 'b', 'p', 'v', 'u', 'k', 'f', 'w', 'h', 'z', 'a', 'x', 'e', 'o', 'q', 'j'},  // 'a'
+  {'e', 'o', 'l', 'a', 'u', 'y', 'i', 'r', 's', 'j', 'b', 'm', 'c', 't', 'd', 'p', 'n', 'h', 'f', 'w', 'g', 'v', 'k', 'x', 'z', 'q'},  // 'b'
+  {'o', 'e', 'a', 'h', 't', 'i', 'k', 'l', 'r', 'u', 'c', 's', 'y', 'd', 'p', 'm', 'n', 'f', 'b', 'g', 'v', 'w', 'q', 'z', 'j', 'x'},  // 'c'
+  {'e', 'i', 'a', 'o', 's', 't', 'u', 'r', 'd', 'b', 'c', 'm', 'w', 'f', 'l', 'v', 'p', 'y', 'g', 'h', 'n', 'j', 'k', 'q', 'x', 'z'},  // 'd'
+  {'r', 's', 'n', 'd', 'a', 't', 'c', 'l', 'm', 'e', 'w', 'p', 'i', 'v', 'o', 'f', 'x', 'b', 'g', 'y', 'h', 'u', 'q', 'k', 'j', 'z'},  // 'e'
+  {'o', 'i', 'r', 'e', 't', 'a', 'f', 'u', 'l', 's', 'c', 'y', 'p', 'm', 'h', 'd', 'w', 'b', 'g', 'n', 'v', 'j', 'k', 'x', 'q', 'z'},  // 'f'
+  {'e', 'a', 'h', 'r', 'i', 'o', 'u', 's', 't', 'n', 'l', 'y', 'g', 'c', 'p', 'f', 'm', 'b', 'w', 'd', 'v', 'k', 'j', 'z', 'q', 'x'},  // 'g'
+  {'e', 'a', 'i', 'o', 't', 'r', 'u', 'n', 'y', 's', 'm', 'c', 'p', 'l', 'w', 'd', 'b', 'f', 'h', 'g', 'v', 'q', 'k', 'j', 'z', 'x'},  // 'h'
+  {'n', 't', 's', 'o', 'c', 'l', 'e', 'a', 'd', 'r', 'g', 'v', 'm', 'f', 'p', 'b', 'z', 'k', 'x', 'i', 'u', 'w', 'h', 'q', 'j', 'y'},  // 'i'
+  {'o', 'a', 'u', 'e', 'i', 'p', 'r', 's', 'c', 'k', 'm', 'd', 'b', 'n', 't', 'v', 'l', 'h', 'f', 'j', 'w', 'g', 'y', 'z', 'x', 'q'},  // 'j'
+  {'e', 'i', 's', 'a', 'n', 'o', 't', 'l', 'h', 'y', 'b', 'f', 'r', 'c', 'm', 'p', 'u', 'w', 'g', 'd', 'k', 'j', 'v', 'q', 'x', 'z'},  // 'k'
+  {'e', 'i', 'l', 'a', 'o', 'y', 's', 'd', 't', 'u', 'p', 'c', 'f', 'b', 'm', 'r', 'v', 'w', 'k', 'g', 'n', 'h', 'j', 'z', 'q', 'x'},  // 'l'
+  {'e', 'a', 'o', 'i', 'p', 's', 'm', 'b', 'u', 'y', 't', 'c', 'l', 'r', 'f', 'n', 'd', 'w', 'h', 'g', 'v', 'j', 'k', 'x', 'z', 'q'},  // 'm'
+  {'t', 'd', 'g', 'e', 's', 'a', 'o', 'i', 'c', 'f', 'n', 'u', 'y', 'l', 'k', 'm', 'p', 'v', 'b', 'w', 'h', 'r', 'j', 'z', 'q', 'x'},  // 'n'
+  {'n', 'r', 'u', 'f', 'm', 't', 'l', 'w', 's', 'p', 'o', 'd', 'c', 'v', 'g', 'b', 'a', 'k', 'i', 'e', 'y', 'h', 'x', 'j', 'z', 'q'},  // 'o'
+  {'r', 'e', 'a', 'o', 'l', 'p', 'i', 'h', 'u', 't', 's', 'm', 'y', 'd', 'c', 'f', 'g', 'b', 'w', 'n', 'v', 'k', 'q', 'x', 'j', 'z'},  // 'p'
+  {'u', 'l', 's', 'a', 'i', 't', 'r', 'c', 'f', 'w', 'p', 'm', 'h', 'n', 'd', 'e', 'b', 'o', 'q', 'v', 'g', 'k', 'x', 'j', 'y', 'z'},  // 'q'
+  {'e', 'i', 'o', 'a', 's', 't', 'u', 'y', 'w', 'c', 'm', 'n', 'd', 'l', 'r', 'b', 'v', 'g', 'f', 'x', 'k', 'j', 'z', 'q', 'h', 'p'},  // 'r'
+  {'t', 'e', 'i', 'o', 'a', 's', 'r', 't', 'u', 'y', 'w', 'c', 'l', 'm', 'p', 'b', 'f', 'd', 'n', 'g', 'v', 'k', 'j', 'z', 'x', 'q'},  // 's'
+  {'a', 'e', 'i', 'o', 't', 'r', 'u', 'n', 'y', 's', 'm', 'c', 'p', 'l', 'w', 'd', 'b', 'f', 'h', 'g', 'v', 'q', 'k', 'j', 'z', 'x'},  // 't'
+  {'r', 's', 'n', 'd', 'a', 't', 'c', 'l', 'm', 'e', 'w', 'p', 'i', 'v', 'o', 'f', 'x', 'b', 'g', 'y', 'h', 'u', 'q', 'k', 'j', 'z'},  // 'u'
+  {'e', 'i', 'a', 'o', 'd', 's', 'c', 'y', 'r', 'u', 't', 'p', 'g', 'b', 'l', 'h', 'm', 'n', 'w', 'f', 'v', 'x', 'k', 'j', 'q', 'z'},  // 'v'
+  {'i', 'e', 'a', 'h', 'o', 's', 'n', 'r', 'w', 't', 'l', 'y', 'p', 'c', 'm', 'd', 'b', 'f', 'u', 'j', 'g', 'k', 'v', 'x', 'z', 'q'},  // 'w'
+  {'t', 'p', 'i', 'a', 'c', 'e', 'x', 'm', 'o', 's', 'u', 'y', 'f', 'h', 'b', 'l', 'r', 'd', 'w', 'v', 'n', 'g', 'k', 'j', 'z', 'q'},  // 'x'
+  {'o', 's', 'e', 'a', 't', 'p', 'i', 'c', 'm', 'r', 'l', 'b', 'w', 'n', 'd', 'f', 'h', 'g', 'u', 'v', 'j', 'y', 'k', 'z', 'q', 'x'},  // 'y'
+  {'e', 'a', 'i', 'o', 'z', 'u', 'y', 'l', 's', 'd', 'c', 'h', 'r', 'm', 'b', 't', 'p', 'n', 'w', 'f', 'g', 'k', 'j', 'v', 'x', 'q'}   // 'z'
+};
 
 String[] phrases; //contains all of the phrases
 int totalTrialNum = 2; //the total number of phrases to be tested - set this low for testing. Might be ~10 for the real bakeoff!
@@ -36,7 +66,6 @@ void setup()
   textFont(createFont("Arial", 24)); //set the font to arial 24. Creating fonts is expensive, so make difference sizes once in setup, not draw
   noStroke(); //my code doesn't use any strokes
 }
-
 
 //You can modify anything in here. This is just a basic implementation.
 void draw()
@@ -92,29 +121,26 @@ void draw()
     
     // Draw the alphabet buttons
     float buttonSize = sizeOfInputArea / 6; // 6 buttons per row
-    char[] customOrder = {'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 'l', 'c', 'u', 'm', 'w', 'f', 'g', 'y', 'p', 'b', 'v', 'k', 'j', 'x', 'q', 'z'};
-    
-    for (int i = 0; i < customOrder.length; i++) {
-        char letter = customOrder[i]; // Get the current letter from the custom order
-        float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; // Calculate x position
-        float y = height/2 - sizeOfInputArea/2 + floor(i / 6) * buttonSize; // Calculate y position
-        fill(255); // White button color
-        rect(x, y, buttonSize, buttonSize); // Draw the button
-        fill(0); // Black text color
-        textAlign(CENTER, CENTER);
-        text(letter, x + buttonSize/2, y + buttonSize/2); // Draw the letter in the center of the button
+    for (int i = 0; i < 26; i++) {
+      char letter = letter_order[i];
+      float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; 
+      float y = height/2 - sizeOfInputArea/2 + (1+floor(i / 6)) * buttonSize; 
+      fill(255); // White button color
+      rect(x, y, buttonSize, buttonSize);
+      fill(0); // Black text color
+      text(letter, x + buttonSize/2 - 5, y + buttonSize/2 + 5); 
     }
 
-    int space = 28;
-    char letter = (char)('_'); // Get the current letter
-    float x = width/2 - sizeOfInputArea/2 + (space % 6) * buttonSize; // Calculate x position
-    float y = height/2 - sizeOfInputArea/2 + floor(space / 6) * buttonSize; // Calculate y position
+    int space = 0;
+    char letter = (char)('_'); 
+    float x = width/2 - sizeOfInputArea/2 + (space % 6) * buttonSize;
+    float y = height/2 - sizeOfInputArea/2 + floor(space / 6) * buttonSize;
     fill(255); // White button color
-    rect(x, y, buttonSize, buttonSize); // Draw the button
+    rect(x, y, buttonSize, buttonSize);
     fill(0); // Black text color
-    text(letter, x + buttonSize/2 - 1, y + buttonSize/2); // Draw the letter in the button
+    text(letter, x + buttonSize/2 - 5, y + buttonSize/2 + 5); 
     
-    int del = 29;
+    int del = 1;
     letter = (char)('<'); // Get the current letter
     x = width/2 - sizeOfInputArea/2 + (del % 6) * buttonSize; // Calculate x position
     y = height/2 - sizeOfInputArea/2 + floor(del / 6) * buttonSize; // Calculate y position
@@ -141,26 +167,24 @@ boolean didMouseClick(float x, float y, float w, float h) //simple function to d
   return (mouseX > x && mouseX<x+w && mouseY>y && mouseY<y+h); //check to see if it is in button bounds
 }
 
-
 //my terrible implementation you can entirely replace
 void mousePressed()
 {
   // Check if the click is inside any of the letter buttons
   float buttonSize = sizeOfInputArea / 6; // 6 buttons per row
-  for (int i = 0; i < customOrder.length; i++) {
+  for (int i = 0; i < 26; i++) {
     float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; // Calculate x position
-    float y = height/2 - sizeOfInputArea/2 + floor(i / 6) * buttonSize; // Calculate y position
+    float y = height/2 - sizeOfInputArea/2 + (1+floor(i / 6)) * buttonSize; // Calculate y position
     if (mouseX > x && mouseX < x + buttonSize && mouseY > y && mouseY < y + buttonSize) {
-      char letter = customOrder[i]; // Get the letter associated with the button
+      char letter = (char)letter_order[i]; // Get the letter associated with the button
       currentTyped += letter; // Add the letter to currentTyped
     }
   }
-  
-  for (int i = 28; i < 30; i++) {
+  for (int i = 0; i < 2; i++) {
     float x = width/2 - sizeOfInputArea/2 + (i % 6) * buttonSize; // Calculate x position
     float y = height/2 - sizeOfInputArea/2 + floor(i / 6) * buttonSize; // Calculate y position
     if (mouseX > x && mouseX < x + buttonSize && mouseY > y && mouseY < y + buttonSize) {
-      if (i == 28) {
+      if (i == 0) {
         currentTyped += " "; // Add the letter to currentTyped
       } else {
         if (currentTyped.length() > 0) {
@@ -169,8 +193,17 @@ void mousePressed()
       }
     }
   }
+  if (currentTyped.length() > 0) {
+    prev = currentTyped.charAt(currentTyped.length()-1);
+    if (prev == ' ') {
+      letter_order = letterMap[0];
+    } else {
+      letter_order = letterMap[prev-'a'+1];
+    }
+  } else {
+    prev = ' ';
+  }
  
-
   //You are allowed to have a next button outside the 1" area
   if (didMouseClick(600, 600, 200, 200)) //check if click is in next button
   {
@@ -251,6 +284,9 @@ void drawWatch()
   image(watch, 0, 0);
   popMatrix();
 }
+
+
+
 
 
 //=========SHOULD NOT NEED TO TOUCH THIS METHOD AT ALL!==============
